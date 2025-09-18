@@ -1,0 +1,7 @@
+POSTGRES_USER=admin
+POSTGRES_PASSWORD=quelmap_admin_pass_hewifoe35c5hdKocuiwec7672DaJ0918y
+POSTGRES_DB=main_db
+
+# Readonly user for Code Sandbox
+DB_READER_PASSWORD=quelmap_reader_pass_j30hcnidm3cbirubco3JKN # Please match with db/init.sql
+DB_READER_USER=reader # Please match with db/init.sql

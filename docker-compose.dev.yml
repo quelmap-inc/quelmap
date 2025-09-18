@@ -1,0 +1,72 @@
+services:
+  quelmap-db:
+    image: postgres:15-alpine
+    container_name: db_service
+    env_file:
+      - .dbsetting
+    networks:
+      - app_network
+    volumes:
+      - ./db:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d main_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: always
+
+  quelmap-sandbox:
+    build: ./sandbox
+    container_name: sandbox_service
+    networks:
+      - app_network
+    env_file:
+      - .dbsetting
+    depends_on:
+      quelmap-db:
+        condition: service_healthy
+
+    command: uvicorn main:app --host 0.0.0.0 --port 8001
+
+  quelmap-app:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    container_name: app_service
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    env_file:
+      - .dbsetting
+    ports:
+      - "8073:8000"
+    environment:
+      CODE_RUNNER_URL: http://quelmap-sandbox:8001/
+    networks:
+      - app_network
+    depends_on:
+      - quelmap-sandbox
+      - quelmap-db
+    volumes:
+      - ./app/src:/usr/src/app/src
+
+  quelmap-frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile.dev
+    stdin_open: true
+    tty: true
+    ports:
+      - 3030:5173
+    command: /bin/sh -c "npm install && npm run dev"
+    volumes:
+      - ./frontend:/app
+      - node-modules:/app/node_modules/
+    environment:
+      - VITE_SERVER_URL=http://localhost:8073
+
+networks:
+  app_network:
+    driver: bridge
+
+volumes:
+  node-modules:

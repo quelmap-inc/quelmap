@@ -1,0 +1,20 @@
+fastapi
+uvicorn[standard]
+requests # code_runnerにHTTPリクエストを送るため
+pydantic
+jinja2
+python-multipart
+markdown
+
+tabulate
+sqlalchemy
+psycopg2-binary
+pandas
+
+
+openai==1.74.0
+
+numpy
+torch
+torchvision
+openpyxl

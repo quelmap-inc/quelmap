@@ -1,0 +1,17 @@
+fastapi
+uvicorn[standard]
+pandas
+sqlalchemy
+psycopg2-binary # PostgreSQL用ドライバ
+pydantic
+numpy
+scikit-learn
+markdown
+tabulate
+matplotlib
+japanize-matplotlib
+seaborn
+scipy
+sympy
+statsmodels
+umap-learn
