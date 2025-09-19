@@ -222,28 +222,28 @@ function TablePanelContent({
               Table ({dataRows.length} rows × {headers.length} columns)
             </span>
             <div className='flex items-center gap-2'>
-              <Button onClick={copyCSV} variant='outline' size='sm'>
-                <Copy className='mr-2 h-4 w-4' />
-                Copy
-              </Button>
               <Button onClick={onClose} variant='ghost' size='sm'>
                 <X className='h-4 w-4' />
               </Button>
             </div>
           </div>
           <div className='flex w-full items-center gap-2'>
-            <Button onClick={downloadCSV} variant='outline' size='sm'>
+            <Button onClick={downloadCSV} variant='link' size='sm'>
               <Download className='mr-2 h-4 w-4' />
               CSV
             </Button>
-            <Button onClick={downloadXLSX} variant='outline' size='sm'>
+            <Button onClick={downloadXLSX} variant='link' size='sm'>
               <Download className='mr-2 h-4 w-4' />
               XLSX
             </Button>
-            <Button onClick={dowmloadTSV} variant='outline' size='sm'>
+            <Button onClick={dowmloadTSV} variant='link' size='sm'>
               <Download className='mr-2 h-4 w-4' />
               TSV
             </Button>
+              <Button onClick={copyCSV} variant='link' size='sm'>
+                <Copy className='mr-2 h-4 w-4' />
+                Copy
+              </Button>
           </div>
         </CardTitle>
       </CardHeader>

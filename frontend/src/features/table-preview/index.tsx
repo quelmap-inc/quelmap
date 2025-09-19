@@ -189,10 +189,9 @@ export default function TablePreview() {
       </Header>
 
       <Main>
-        <div className='mb-2 flex flex-wrap items-center justify-between space-y-2 gap-x-4'>
+        <div className='mb-2 flex flex-col space-y-2 gap-x-4'>
           <div>
             <div className='mb-2 flex items-center space-x-2'>
-              <IconDatabase size={24} />
               <EditableTableName
                 tableName={tableName}
                 onSuccess={(newTableName) =>
@@ -204,26 +203,16 @@ export default function TablePreview() {
                 className='text-2xl font-bold tracking-tight'
               />
             </div>
-            <p className='text-muted-foreground'>Table data preview</p>
-            <div className='mt-2 flex items-center space-x-2'>
-              <Badge variant='secondary'>
-                Total rows: {totalRows.toLocaleString()}
-              </Badge>
-              <Badge variant='outline'>
-                Columns: {firstPage.columns.length}
-              </Badge>
-              <Badge variant='outline'>Loaded: {currentRows} rows</Badge>
-            </div>
           </div>
           <div className='flex items-center space-x-2'>
-            <Button onClick={() => refetch()} variant='outline'>
+            <Button onClick={() => refetch()} variant='link'>
               <IconRefresh size={16} className='mr-2' />
               Refresh
             </Button>
             <AlertDialog>
               <AlertDialogTrigger asChild>
                 <Button
-                  variant='destructive'
+                  variant='link'
                   disabled={deleteTableMutation.isPending}
                 >
                   <IconTrash size={16} className='mr-2' />

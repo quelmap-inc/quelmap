@@ -17,6 +17,7 @@ import { useStartAnalysis, useModelListByMode, type ModelInfo } from '@/hooks/us
 import { useTableList } from '@/hooks/use-table-list'
 import { toast } from 'sonner'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import { Button } from '@/components/ui/button'
 // 型定義
 interface SidePanelContentType {
   type: 'code' | 'table' | 'step'
@@ -177,8 +178,8 @@ function AnalysisReportItem({
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <button
-                    type="button"
+                  <Button
+                    variant='link'
                     onClick={() => handleCopy(report.query)}
                     aria-label="コピー"
                     className="rounded-md mt-3
@@ -189,15 +190,15 @@ function AnalysisReportItem({
                     disabled={isGlobalSubmitting}
                   >
                     {copyState === 'success' ? (<Check className="w-4 h-4" />) : (<Copy className="w-4 h-4" />)}
-                  </button>
+                  </Button>
                 </TooltipTrigger>
                 <TooltipContent side="top">
                   <p className="text-xs">{copyMessage}</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
-            <button
-              type="button"
+            <Button
+                    variant='link'
               onClick={startEditing}
               aria-label="Edit"
               className="rounded-md mt-3
@@ -207,7 +208,7 @@ function AnalysisReportItem({
               disabled={isGlobalSubmitting}
             >
               <Pencil className="w-4 h-4" />
-            </button>
+            </Button>
           </>
         )}
       </div>

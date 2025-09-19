@@ -68,12 +68,6 @@ export function InfiniteTableDataTable<TData, TValue>({
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [globalFilter, setGlobalFilter] = React.useState('')
 
-  // State for server-side filtering
-  const [filterColumn, setFilterColumn] = React.useState(
-    currentFilterColumn || ''
-  )
-  const [filterValue, setFilterValue] = React.useState(currentFilterValue || '')
-
   const table = useReactTable({
     data,
     columns,
@@ -94,66 +88,10 @@ export function InfiniteTableDataTable<TData, TValue>({
     getFacetedUniqueValues: getFacetedUniqueValues(),
   })
 
-  const handleServerFilter = () => {
-    if (onFilter && filterColumn && filterValue) {
-      onFilter(filterColumn, filterValue)
-    }
-  }
-
-  const handleClearFilter = () => {
-    setFilterColumn('')
-    setFilterValue('')
-    if (onClearFilter) {
-      onClearFilter()
-    }
-  }
-
   return (
     <div className='space-y-4'>
       {/* Filter controls */}
       <div className='flex items-center space-x-2'>
-        <div className='flex flex-1 items-center space-x-2'>
-          <Select value={filterColumn} onValueChange={setFilterColumn}>
-            <SelectTrigger className='w-[200px]'>
-              <SelectValue placeholder='Select column to filter' />
-            </SelectTrigger>
-            <SelectContent>
-              {tableColumns.map((column) => (
-                <SelectItem key={column} value={column}>
-                  {column}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
-          <Input
-            placeholder='Enter filter value...'
-            value={filterValue}
-            onChange={(e) => setFilterValue(e.target.value)}
-            className='max-w-xs'
-            disabled={!filterColumn}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                handleServerFilter()
-              }
-            }}
-          />
-
-          <Button
-            onClick={handleServerFilter}
-            disabled={!filterColumn || !filterValue}
-            variant='outline'
-          >
-            Filter
-          </Button>
-
-          {(currentFilterColumn || currentFilterValue) && (
-            <Button onClick={handleClearFilter} variant='outline' size='sm'>
-              <X className='mr-1 h-4 w-4' />
-              Clear
-            </Button>
-          )}
-        </div>
 
         {/* Global search (client-side) */}
         <Input

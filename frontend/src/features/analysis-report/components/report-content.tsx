@@ -1,4 +1,4 @@
-import { Download, Code, Printer, RotateCcwIcon } from 'lucide-react'
+import { Download, ChevronDown, Printer, RotateCcwIcon } from 'lucide-react'
 import {
   type ReportContent as ReportContentType,
   type ActionStep,
@@ -87,17 +87,17 @@ export function ReportContent({
   return (
 
     <div className='space-y-6'>
-      <div className='flex justify-end no-print'>
+      <div className='flex justify-start no-print'>
         {/* Python Code Button */}
         {pythonCode && (
           <Button
-            variant='outline'
+            variant='link'
             onClick={() =>
               onShowSidePanel({ type: 'code', content: pythonCode })
             }
             className='flex items-center gap-2'
           >
-            <Code className='h-4 w-4' />
+            <ChevronDown className='h-4 w-4' />
             Python Code
           </Button>
         )}
