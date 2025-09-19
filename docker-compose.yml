@@ -1,0 +1,66 @@
+services:
+  quelmap-db:
+    image: postgres:15-alpine
+    container_name: db_service
+    env_file:
+      - .dbsetting
+    networks:
+      - app_network
+    volumes:
+      - ./db:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d main_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: always
+
+  quelmap-sandbox:
+    build: ./sandbox
+    container_name: sandbox_service
+    env_file:
+      - .dbsetting
+    networks:
+      - app_network
+    depends_on:
+      quelmap-db:
+        condition: service_healthy
+
+    command: uvicorn main:app --host 0.0.0.0 --port 8001
+
+  quelmap-app:
+    build:
+      context: ./app # ビルドコンテキストは app ディレクトリ
+      dockerfile: Dockerfile
+    container_name: app_service
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    ports:
+      - "8073:8000"
+    env_file:
+      - .dbsetting
+    environment:
+      CODE_RUNNER_URL: http://quelmap-sandbox:8001/
+    networks:
+      - app_network
+    depends_on:
+      - quelmap-sandbox
+      - quelmap-db
+    volumes:
+      - ./app/src:/usr/src/app/src
+
+  quelmap-frontend:
+    build: 
+      context: .
+      dockerfile: frontend/Dockerfile
+      args:
+        - VITE_SERVER_URL=http://localhost:8073
+    restart: unless-stopped
+    ports:
+      - "3030:3000"
+    environment:
+      - NODE_ENV=production
+      
+networks:
+  app_network:
+    driver: bridge
