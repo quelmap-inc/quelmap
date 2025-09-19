@@ -43,6 +43,7 @@ You can use any LLM provider’s model by setting the base_url and api_key from 
 - OpenAI
 - Anthropic
 - Groq
+- (And more)
 (If you don't know what is base_url and api_key, please google "(Provider Name such as llama.cpp) openai compatible")
 
 If you set an LLM provider such as OpenAI or Groq, your dataset schema will be sent. If you want to run everything completely locally, please proceed to the LLM setup steps below.
