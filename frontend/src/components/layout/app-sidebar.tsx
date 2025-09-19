@@ -32,7 +32,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   if (isLoading) {
     return (
-      <Sidebar collapsible='icon' variant='floating' {...props}>
+      <Sidebar collapsible='icon' {...props}>
         <SidebarHeader>
           <div className='px-3 py-2'>Loading...</div>
         </SidebarHeader>
@@ -46,7 +46,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   if (error || !sidebarData) {
     return (
-      <Sidebar collapsible='icon' variant='floating' {...props}>
+      <Sidebar collapsible='icon' {...props}>
         <SidebarHeader>
           <div className='px-3 py-2'>Error</div>
         </SidebarHeader>
@@ -64,7 +64,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   return (
     <>
-      <Sidebar collapsible='icon' variant='floating' {...props}>
+      <Sidebar collapsible='icon' {...props}>
         <SidebarHeader>
           {
             open ? (
