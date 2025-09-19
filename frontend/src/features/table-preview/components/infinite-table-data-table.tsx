@@ -12,16 +12,9 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table'
-import { X, ChevronDown } from 'lucide-react'
+import { ChevronDown } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
 import {
   Table,
   TableBody,
@@ -49,11 +42,8 @@ interface InfiniteDataTableProps<TData, TValue> {
 export function InfiniteTableDataTable<TData, TValue>({
   columns,
   data,
-  tableColumns = [],
-  onFilter,
   currentFilterColumn,
   currentFilterValue,
-  onClearFilter,
   onLoadMore,
   hasNextPage,
   isFetchingNextPage,

@@ -1,4 +1,4 @@
-import { Download, ChevronDown, Printer, RotateCcwIcon } from 'lucide-react'
+import { Download, ChevronDown, Printer, RotateCcwIcon,Code } from 'lucide-react'
 import {
   type ReportContent as ReportContentType,
   type ActionStep,

@@ -305,12 +305,14 @@ export default function NewAnalysis() {
                         ))}
                       </AIInputModelSelectContent>
                     </AIInputModelSelect>
+                  <div hidden>
                     <AIInputMultiSelectTable
                       options={(tables ?? []).map((t) => ({ value: t.name, label: t.name }))}
                       selected={selectedTables}
                       onSelectedChange={setSelectedTables}
                       placeholder="Select tables"
                     />
+                  </div>
 
                   </AIInputTools>
                   <AIInputSubmit disabled={!text || !model || !tables || tables.length === 0 || !!error} status={status} />
