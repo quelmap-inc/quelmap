@@ -36,7 +36,16 @@ docker compose up --build -d
 ```
 This command sets up 3 containers(Application, Python Sandbox, PostgresDB). Wait for starting up all containers, Access "http://localhost:3030".
 You can use any LLM provider’s model by setting the base_url and api_key from the settings icon in the top right (by default, Ollama is used).
-If you set an LLM provider such as OpenAI or Groq, your data schema will be sent. If you want to run everything completely locally, please proceed to the LLM setup steps below.
+- ollama (default)
+- llama.cpp
+- LM Studio
+- vllm
+- OpenAI
+- Anthropic
+- Groq
+(If you don't know what is base_url and api_key, please google "(Provider Name such as llama.cpp) openai compatible")
+
+If you set an LLM provider such as OpenAI or Groq, your dataset schema will be sent. If you want to run everything completely locally, please proceed to the LLM setup steps below.
 
 
 ### LLM Setup
@@ -84,7 +93,13 @@ Sample queries:
 5. Analyze the correlation between **Relationship Satisfaction with Manager** and **Years with Current Manager**.
 6. Perform a **t-test** to test whether there is a difference in **Job Satisfaction** between employees who have worked at **one or more previous companies** and those who have worked at **none**.
 
+### Uploadable data type
+Following type of data can be uploaded from web UI.
+- CSV file
+- EXCEL file
+- SQlite db file
 
+Once you upload files, the data will be converted into data table and stored in container volume.
 
 ### Connect to Database with connection string (Preview)
 Normally, uploaded data is stored in the volume of the Postgres container, but you can also execute SQL directly against an external database. A connection string with read permissions is required. (Since unexpected changes may occur, it is recommended to use a user with read-only permissions.)
@@ -101,8 +116,6 @@ echo "USER_DATABASE_URL=postgresql://postgres:mysecretpassword@localhost:5432/my
 ```bash
 docker compose up --build -d
 ```
-
-
 
 ## Contribution
  If you find bugs or have ideas, please share them in via GitHub Issues. For more information on contributing to quelmap you can read the [CONTRIBUTING.md](CONTRIBUTING.md) file to learn more about quelmap and how you can contribute to it.
