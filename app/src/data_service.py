@@ -374,6 +374,7 @@ class DataService:
                     # メインPostgreSQLに保存（最適化版）
                     main_pg_table_name = self._normalize_name(table_name)
                     self.bulk_insert_to_postgres(
+                        df,
                         main_pg_table_name,
                         main_db_engine,
                         if_exists="replace",
