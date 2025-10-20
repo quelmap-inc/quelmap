@@ -14,6 +14,7 @@ from sqlalchemy.exc import OperationalError
 from .database import engine
 from .utils.prompts import set_db_schema
 import unicodedata
+from io import StringIO
 
 # PostgreSQL予約語
 POSTGRESQL_RESERVED_WORDS = {
@@ -192,6 +193,72 @@ class DataService:
             )
         return self.engine
 
+    def bulk_insert_to_postgres(
+        self, df: pd.DataFrame, table_name: str, db_engine, if_exists: str = "replace"
+    ) -> None:
+        """
+        PostgreSQL COPYコマンドを使用した高速一括挿入
+        
+        Args:
+            df: pandas DataFrame
+            table_name: テーブル名
+            db_engine: SQLAlchemy Engine
+            if_exists: テーブルが存在する場合の動作 ("replace" のみサポート)
+        """
+        # psycopg2のネイティブ接続を取得
+        raw_conn = db_engine.raw_connection()
+        cursor = raw_conn.cursor()
+        
+        try:
+            # if_exists="replace"の場合、既存テーブルを削除
+            if if_exists == "replace":
+                cursor.execute(f"DROP TABLE IF EXISTS {table_name}")
+            
+            # DataFrameのdtypesからPostgreSQLデータ型にマッピング
+            type_mapping = {
+                'int64': 'INTEGER',
+                'int32': 'INTEGER',
+                'int16': 'INTEGER',
+                'int8': 'INTEGER',
+                'float64': 'DOUBLE PRECISION',
+                'float32': 'DOUBLE PRECISION',
+                'bool': 'BOOLEAN',
+                'datetime64[ns]': 'TIMESTAMP',
+                'object': 'TEXT'
+            }
+            
+            # CREATE TABLE文を生成
+            columns = []
+            for col_name, dtype in zip(df.columns, df.dtypes):
+                pg_type = type_mapping.get(str(dtype), 'TEXT')
+                # カラム名をダブルクォートで囲む
+                columns.append(f'"{col_name}" {pg_type}')
+            
+            create_table_sql = f"CREATE TABLE {table_name} ({', '.join(columns)})"
+            cursor.execute(create_table_sql)
+            
+            # StringIOオブジェクトを作成してCSV形式に変換
+            buffer = StringIO()
+            df.to_csv(buffer, index=False, header=False, sep=',')
+            buffer.seek(0)
+            
+            # COPYコマンドで一括挿入
+            cursor.copy_expert(
+                f"COPY {table_name} FROM STDIN WITH (FORMAT CSV)",
+                buffer
+            )
+            
+            # トランザクションをコミット
+            raw_conn.commit()
+            
+        except Exception as e:
+            # エラー時はロールバック
+            raw_conn.rollback()
+            raise e
+        finally:
+            # カーソルをクローズ
+            cursor.close()
+
     def process_file_to_postgres(
         self, file_path: str, original_filename: str, db_engine
     ) -> List[str]:
@@ -207,8 +274,8 @@ class DataService:
                 table_name = self._normalize_name(Path(original_filename).stem)
                 table_names.append(table_name)
 
-                # PostgreSQLに保存
-                df.to_sql(table_name, db_engine, if_exists="replace", index=False)
+                # PostgreSQLに保存（最適化版）
+                self.bulk_insert_to_postgres(df, table_name, db_engine, if_exists="replace")
 
             elif file_path.endswith((".xlsx", ".xls")):
                 # Excelファイルの場合、複数のシートを処理
@@ -221,7 +288,7 @@ class DataService:
                     # シート名をテーブル名として使用
                     table_name = self._normalize_name(sheet_name)
                     table_names.append(table_name)
-                    df.to_sql(table_name, db_engine, if_exists="replace", index=False)
+                    self.bulk_insert_to_postgres(df, table_name, db_engine, if_exists="replace")
 
         except Exception as e:
             raise HTTPException(status_code=400, detail=f"File processing error: {str(e)}")
@@ -249,10 +316,10 @@ class DataService:
                     # カラム名を正規化（小文字、特殊文字処理）
                     df.columns = [self._normalize_name(col) for col in df.columns]
 
-                    # PostgreSQLに保存
+                    # PostgreSQLに保存（最適化版）
                     pg_table_name = self._normalize_name(table_name)
-                    df.to_sql(
-                        pg_table_name, db_engine, if_exists="replace", index=False
+                    self.bulk_insert_to_postgres(
+                        df, pg_table_name, db_engine, if_exists="replace"
                     )
                     table_names.append(pg_table_name)
 
@@ -304,13 +371,12 @@ class DataService:
                     # カラム名を正規化（小文字、特殊文字処理）
                     df.columns = [self._normalize_name(col) for col in df.columns]
 
-                    # メインPostgreSQLに保存
+                    # メインPostgreSQLに保存（最適化版）
                     main_pg_table_name = self._normalize_name(table_name)
-                    df.to_sql(
+                    self.bulk_insert_to_postgres(
                         main_pg_table_name,
                         main_db_engine,
                         if_exists="replace",
-                        index=False,
                     )
                     table_names.append(main_pg_table_name)
 
